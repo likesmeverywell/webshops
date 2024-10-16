@@ -1,0 +1,12 @@
+@startuml
+class com.likesmeverywell.Webshop.config.JwtFilter {
+- JWTService jwtservice
+~ ApplicationContext context
+# void doFilterInternal(HttpServletRequest,HttpServletResponse,FilterChain)
+}
+
+
+
+
+org.springframework.web.filter.OncePerRequestFilter <|-- com.likesmeverywell.Webshop.config.JwtFilter
+@enduml

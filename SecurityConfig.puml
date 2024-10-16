@@ -1,0 +1,15 @@
+@startuml
+class com.likesmeverywell.Webshop.config.SecurityConfig {
+- UserDetailsService userDetailsService
+~ JwtFilter jwtFilter
+- JWTService jwtService
+- Authentication authManager
++ SecurityFilterChain securityFilterChain(HttpSecurity)
++ AuthenticationProvider authenticationProvider()
++ AuthenticationManager authenticationManager(AuthenticationConfiguration)
++ PasswordEncoder passwordEncoder()
++ CorsConfigurationSource corsConfigurationSource()
+}
+
+
+@enduml

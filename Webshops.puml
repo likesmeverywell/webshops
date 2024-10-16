@@ -1,0 +1,287 @@
+@startuml
+class com.likesmeverywell.Webshop.service.AuthUserService {
+- AuthUserRepository authUserRepository
+- PasswordEncoder passwordEncoder
+~ AuthenticationManager authManager
++ User register(User)
++ Optional<User> findByEmail(String)
++ Optional<User> findById(Long)
++ User updateUser(Long,User)
++ void deleteUser(Long)
+}
+
+
+class com.likesmeverywell.Webshop.service.UserService {
+- UserRepository userRepository
+- Authentication authManager
+- BCryptPasswordEncoder encoder
++ List<User> getAllUsers()
++ Optional<User> getUserById(Long)
++ User createUser(User)
++ User updateUser(Long,User)
++ void deleteUser(Long)
+}
+
+
+enum com.likesmeverywell.Webshop.model.Role {
++  ADMIN
++  CUSTOMER
++  SUPPORT
++  SELLER
++  GUEST
+}
+
+interface com.likesmeverywell.Webshop.repository.CategoryRepository {
+}
+class com.likesmeverywell.Webshop.service.OrderService {
+- OrderRepository orderRepository
++ List<Order> getAllOrders()
++ Optional<Order> getOrderById(Long)
++ Order createOrder(Order)
++ Order updateOrder(Long,Order)
++ void deleteOrder(Long)
+}
+
+
+class com.likesmeverywell.Webshop.model.OrderItem {
+- Long id
+- Order order
+- Product product
+- int quantity
+}
+
+class com.likesmeverywell.Webshop.controller.CategoryController {
+- CategoryService categoryService
++ List<Category> getAllCategories()
++ ResponseEntity<Category> getCategoryById(Long)
++ ResponseEntity<Category> createCategory(Category)
++ ResponseEntity<Category> updateCategory(Long,Category)
++ ResponseEntity<Void> deleteCategory(Long)
++ ResponseEntity<Void> addProductToCategory(Long,Long)
++ List<Product> getProductsByCategory(Long)
+}
+
+
+class com.likesmeverywell.Webshop.service.ProductService {
+- ProductRepository productRepository
++ List<Product> getAllProducts()
++ Optional<Product> getProductById(Long)
++ Product addProduct(Product)
++ Product updateProduct(Long,Product)
++ void deleteProduct(Long)
++ List<Product> getProductsByCategory(Long)
+}
+
+
+class com.likesmeverywell.Webshop.controller.UserController {
+- UserService userService
++ ResponseEntity<List<User>> getAllUsers()
++ ResponseEntity<User> getUserById(Long)
++ ResponseEntity<User> createUser(User)
++ ResponseEntity<User> updateUser(Long,User)
++ ResponseEntity<Void> deleteUser(Long)
+}
+
+
+class com.likesmeverywell.Webshop.controller.OrderController {
+- OrderService orderService
++ ResponseEntity<List<Order>> getAllOrders()
++ ResponseEntity<Order> getOrderById(Long)
++ ResponseEntity<Order> createOrder(Order)
++ ResponseEntity<Order> updateOrder(Long,Order)
++ ResponseEntity<Void> deleteOrder(Long)
+}
+
+
+class com.likesmeverywell.Webshop.model.User {
+- Long id
+- String username
+- String email
+- String password
+- Role role
++ Collection<? extends GrantedAuthority> getAuthorities()
++ boolean isAccountNonExpired()
++ boolean isAccountNonLocked()
++ boolean isCredentialsNonExpired()
++ boolean isEnabled()
+}
+
+
+class com.likesmeverywell.Webshop.controller.AdminController {
+- UserService userService
+- ProductService productService
+- CategoryService categoryService
+- OrderService orderService
++ List<User> getAllUsers()
++ User createUser(User)
++ User updateUser(Long,User)
++ void deleteUser(Long)
++ List<Product> getAllProducts()
++ Product createProduct(Product)
++ Product updateProduct(Long,Product)
++ void deleteProduct(Long)
++ List<Category> getAllCategories()
++ Category createCategory(Category)
++ Category updateCategory(Long,Category)
++ void deleteCategory(Long)
++ List<Order> getAllOrders()
++ Order createOrder(Order)
++ Order updateOrder(Long,Order)
++ void deleteOrder(Long)
+}
+
+
+class com.likesmeverywell.Webshop.config.JwtFilter {
+- JWTService jwtservice
+~ ApplicationContext context
+# void doFilterInternal(HttpServletRequest,HttpServletResponse,FilterChain)
+}
+
+
+interface com.likesmeverywell.Webshop.repository.ProductRepository {
+~ List<Product> findByCategoryId(Long)
+}
+
+class com.likesmeverywell.Webshop.controller.AuthController {
+- AuthUserService userService
+- AuthenticationManager authenticationManager
+- UserDetailsService userDetailsService
+~ AuthUserService authUserService
+- JWTService jwtService
++ ResponseEntity<User> register(User)
++ ResponseEntity<String> loginUser(User)
++ ResponseEntity<String> logout(HttpServletRequest,HttpServletResponse)
+}
+
+
+interface com.likesmeverywell.Webshop.repository.CheckoutRepository {
+}
+interface com.likesmeverywell.Webshop.repository.OrderRepository {
+}
+class com.likesmeverywell.Webshop.WebshopApplication {
++ {static} void main(String[])
+}
+
+class com.likesmeverywell.Webshop.service.CategoryService {
+- CategoryRepository categoryRepository
+- ProductRepository productRepository
++ List<Category> getAllCategories()
++ Optional<Category> getCategoryById(Long)
++ Category addCategory(Category)
++ Category updateCategory(Long,Category)
++ void deleteCategory(Long)
++ void addProductToCategory(Long,Long)
++ List<Product> getProductsByCategory(Long)
+}
+
+
+class com.likesmeverywell.Webshop.model.Checkout {
+- Long id
+- User user
+- List<Long> productIds
+- String shippingAddress
+- double totalAmount
+}
+
+class com.likesmeverywell.Webshop.controller.ProductController {
+- ProductService productService
++ List<Product> getAllProducts()
++ ResponseEntity<Product> getProductById(Long)
++ ResponseEntity<Product> createProduct(Product)
++ ResponseEntity<Product> updateProduct(Long,Product)
++ ResponseEntity<Void> deleteProduct(Long)
++ List<Product> getProductsByCategory(Long)
+}
+
+
+class com.likesmeverywell.Webshop.service.JWTService {
+- String secretKey
+- long refreshExpirationTime
+- long expirationTime
++ String generateToken(String)
++ String generateRefreshToken(String)
+- SecretKey getKey()
++ boolean validateToken(String,UserDetails)
++ String extractUsername(String)
++ Date extractExpiration(String)
++ T extractClaim(String,Function<Claims,T>)
+- Claims extractAllClaims(String)
+- Boolean isTokenExpired(String)
+}
+
+
+class com.likesmeverywell.Webshop.model.Order {
+- Long id
+- User user
+- List<OrderItem> orderItems
+- double totalAmount
+}
+
+class com.likesmeverywell.Webshop.config.SecurityConfig {
+- UserDetailsService userDetailsService
+~ JwtFilter jwtFilter
+- JWTService jwtService
+- Authentication authManager
++ SecurityFilterChain securityFilterChain(HttpSecurity)
++ AuthenticationProvider authenticationProvider()
++ AuthenticationManager authenticationManager(AuthenticationConfiguration)
++ PasswordEncoder passwordEncoder()
++ CorsConfigurationSource corsConfigurationSource()
+}
+
+
+class com.likesmeverywell.Webshop.service.CustomUserDetailsService {
+- UserRepository userRepository
++ UserDetails loadUserByUsername(String)
+}
+
+
+class com.likesmeverywell.Webshop.service.CheckoutService {
+- CheckoutRepository checkoutRepository
+- UserRepository userRepository
+- ProductRepository productRepository
++ Checkout createCheckout(Checkout)
++ Optional<Checkout> getCheckoutById(Long)
++ Checkout updateCheckout(Long,Checkout)
++ void deleteCheckout(Long)
+- double calculateTotalAmount(Checkout)
+- double applyDiscounts(double,User)
+}
+
+
+interface com.likesmeverywell.Webshop.repository.AuthUserRepository {
+~ Optional<User> findByEmail(String)
+}
+
+interface com.likesmeverywell.Webshop.repository.UserRepository {
+~ User findByEmail(String)
+~ User findByUsername(String)
+}
+
+class com.likesmeverywell.Webshop.model.Category {
+- Long id
+- String name
+- List<Product> products
+}
+
+class com.likesmeverywell.Webshop.model.Product {
+- Long id
+- String name
+- String description
+- double price
+- Category category
+- String image
+}
+
+
+
+org.springframework.data.jpa.repository.JpaRepository <|-- com.likesmeverywell.Webshop.repository.CategoryRepository
+org.springframework.security.core.userdetails.UserDetails <|.. com.likesmeverywell.Webshop.model.User
+org.springframework.web.filter.OncePerRequestFilter <|-- com.likesmeverywell.Webshop.config.JwtFilter
+org.springframework.data.jpa.repository.JpaRepository <|-- com.likesmeverywell.Webshop.repository.ProductRepository
+org.springframework.data.jpa.repository.JpaRepository <|-- com.likesmeverywell.Webshop.repository.CheckoutRepository
+org.springframework.data.jpa.repository.JpaRepository <|-- com.likesmeverywell.Webshop.repository.OrderRepository
+org.springframework.security.core.userdetails.UserDetailsService <|.. com.likesmeverywell.Webshop.service.CustomUserDetailsService
+org.springframework.data.jpa.repository.JpaRepository <|-- com.likesmeverywell.Webshop.repository.AuthUserRepository
+org.springframework.data.jpa.repository.JpaRepository <|-- com.likesmeverywell.Webshop.repository.UserRepository
+@enduml
